@@ -17,7 +17,7 @@ public class ModEntry : Mod
         RelationshipCommand relationshipCommand = new(Monitor);
 
         helper.ConsoleCommands.Add(
-            "relationship",
+            "social",
             "Usage: relationship <NPC> <hearts>",
             relationshipCommand.Execute
         );
