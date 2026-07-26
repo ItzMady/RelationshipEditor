@@ -24,7 +24,7 @@ internal class RelationshipCommand
             return;
         }
 
-        // hearts help
+        // social help
         if (args.Length == 1 && args[0].Equals("help", StringComparison.OrdinalIgnoreCase))
         {
             this.monitor.Log("Available commands:", LogLevel.Info);
@@ -35,14 +35,14 @@ internal class RelationshipCommand
             return;
         }
 
-        // hearts list
+        // social list
         if (args.Length == 1 && args[0].Equals("list", StringComparison.OrdinalIgnoreCase))
         {
             this.relationshipService.ListNPCs();
             return;
         }
 
-        // hearts all <hearts>
+        // social all <hearts>
         if (args.Length == 2 && args[0].Equals("all", StringComparison.OrdinalIgnoreCase))
         {
             if (!int.TryParse(args[1], out int allHearts))
@@ -61,7 +61,7 @@ internal class RelationshipCommand
             return;
         }
 
-        // hearts <NPC> <hearts>
+        // social <NPC> <hearts>
         if (args.Length < 2)
         {
             this.monitor.Log("Usage: hearts <NPC> <hearts>", LogLevel.Warn);
