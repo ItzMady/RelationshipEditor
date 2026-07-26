@@ -1,4 +1,5 @@
-﻿using RelationshipEditor.Services;
+using System;
+using RelationshipEditor.Services;
 using StardewModdingAPI;
 
 namespace RelationshipEditor.Commands;
@@ -23,17 +24,51 @@ internal class RelationshipCommand
             return;
         }
 
-        // Check arguments
-        if (args.Length != 2)
+        // hearts help
+        if (args.Length == 1 && args[0].Equals("help", StringComparison.OrdinalIgnoreCase))
         {
-            this.monitor.Log("Usage: relationship <NPC> <hearts>", LogLevel.Warn);
+            this.monitor.Log("Available commands:", LogLevel.Info);
+            this.monitor.Log("relationship <NPC> <0-14>   - Set an NPC's friendship.", LogLevel.Info);
+            this.monitor.Log("relationship all <0-14>     - Set every NPC's friendship.", LogLevel.Info);
+            this.monitor.Log("relationship list           - List all available NPCs.", LogLevel.Info);
+            this.monitor.Log("relationship help           - Show this help message.", LogLevel.Info);
             return;
         }
 
-        string npcName = args[0];
+        // hearts list
+        if (args.Length == 1 && args[0].Equals("list", StringComparison.OrdinalIgnoreCase))
+        {
+            this.relationshipService.ListNPCs();
+            return;
+        }
 
-        // Check if the heart value is valid
-        if (!int.TryParse(args[1], out int hearts))
+        // hearts all <hearts>
+        if (args.Length == 2 && args[0].Equals("all", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!int.TryParse(args[1], out int allHearts))
+            {
+                this.monitor.Log("Hearts must be a whole number.", LogLevel.Warn);
+                return;
+            }
+
+            if (allHearts < 0 || allHearts > 14)
+            {
+                this.monitor.Log("Hearts must be between 0 and 14.", LogLevel.Warn);
+                return;
+            }
+
+            this.relationshipService.SetAllHearts(allHearts);
+            return;
+        }
+
+        // hearts <NPC> <hearts>
+        if (args.Length < 2)
+        {
+            this.monitor.Log("Usage: hearts <NPC> <hearts>", LogLevel.Warn);
+            return;
+        }
+
+        if (!int.TryParse(args[^1], out int hearts))
         {
             this.monitor.Log("Hearts must be a whole number.", LogLevel.Warn);
             return;
@@ -45,7 +80,8 @@ internal class RelationshipCommand
             return;
         }
 
-        // Update the relationship
+        string npcName = string.Join(" ", args[..^1]);
+
         this.relationshipService.SetHearts(npcName, hearts);
     }
 }
