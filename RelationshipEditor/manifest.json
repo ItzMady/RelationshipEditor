@@ -2,7 +2,7 @@
   "Name": "ItzMady's Relationship Editor",
   "Author": "ItzMady",
   "Version": "1.0.0",
-  "Description": "Edit friendship levels with any NPC.",
+  "Description": "Edit relationship with NPC.",
   "UniqueID": "ItzMady.RelationshipEditor",
   "EntryDll": "RelationshipEditor.dll",
   "MinimumApiVersion": "4.5.0"
