@@ -6,82 +6,104 @@ namespace RelationshipEditor.Commands;
 
 internal class RelationshipCommand
 {
+    private const int MaxHearts = 14;
+
     private readonly IMonitor monitor;
-    private readonly RelationshipService relationshipService;
+    private readonly RelationshipService relationship;
 
     public RelationshipCommand(IMonitor monitor)
     {
         this.monitor = monitor;
-        this.relationshipService = new RelationshipService(monitor);
+        relationship = new(monitor);
     }
 
     public void Execute(string command, string[] args)
     {
-        // Check if a save is loaded
         if (!Context.IsWorldReady)
         {
-            this.monitor.Log("You must load a save before using this command.", LogLevel.Warn);
+            monitor.Log("Load a save before using this command.", LogLevel.Warn);
             return;
         }
 
-        // social help
-        if (args.Length == 1 && args[0].Equals("help", StringComparison.OrdinalIgnoreCase))
+        if (args.Length == 0)
         {
-            this.monitor.Log("Available commands:", LogLevel.Info);
-            this.monitor.Log("relationship <NPC> <0-14>   - Set an NPC's friendship.", LogLevel.Info);
-            this.monitor.Log("relationship all <0-14>     - Set every NPC's friendship.", LogLevel.Info);
-            this.monitor.Log("relationship list           - List all available NPCs.", LogLevel.Info);
-            this.monitor.Log("relationship help           - Show this help message.", LogLevel.Info);
+            monitor.Log("Use 'social help' to see available commands.", LogLevel.Info);
             return;
         }
 
-        // social list
-        if (args.Length == 1 && args[0].Equals("list", StringComparison.OrdinalIgnoreCase))
+        switch (args[0].ToLowerInvariant())
         {
-            this.relationshipService.ListNPCs();
-            return;
-        }
-
-        // social all <hearts>
-        if (args.Length == 2 && args[0].Equals("all", StringComparison.OrdinalIgnoreCase))
-        {
-            if (!int.TryParse(args[1], out int allHearts))
-            {
-                this.monitor.Log("Hearts must be a whole number.", LogLevel.Warn);
+            case "help":
+                ShowHelp();
                 return;
-            }
 
-            if (allHearts < 0 || allHearts > 14)
-            {
-                this.monitor.Log("Hearts must be between 0 and 14.", LogLevel.Warn);
+            case "list":
+                relationship.ListNPCs();
                 return;
-            }
 
-            this.relationshipService.SetAllHearts(allHearts);
+            case "all":
+                SetAll(args);
+                return;
+
+            default:
+                SetNpc(args);
+                return;
+        }
+    }
+
+    private void ShowHelp()
+    {
+        monitor.Log("Available commands:", LogLevel.Info);
+        monitor.Log("social <NPC> <0-14>   - Set an NPC's friendship.", LogLevel.Info);
+        monitor.Log("social all <0-14>     - Set every NPC's friendship.", LogLevel.Info);
+        monitor.Log("social list           - List all NPCs.", LogLevel.Info);
+        monitor.Log("social help           - Show this help message.", LogLevel.Info);
+    }
+
+    private void SetAll(string[] args)
+    {
+        if (args.Length != 2)
+        {
+            monitor.Log("Usage: social all <hearts>", LogLevel.Warn);
             return;
         }
 
-        // social <NPC> <hearts>
+        if (!TryParseHearts(args[1], out int hearts))
+            return;
+
+        relationship.SetAllHearts(hearts);
+    }
+
+    private void SetNpc(string[] args)
+    {
         if (args.Length < 2)
         {
-            this.monitor.Log("Usage: hearts <NPC> <hearts>", LogLevel.Warn);
+            monitor.Log("Usage: social <NPC> <hearts>", LogLevel.Warn);
             return;
         }
 
-        if (!int.TryParse(args[^1], out int hearts))
-        {
-            this.monitor.Log("Hearts must be a whole number.", LogLevel.Warn);
+        if (!TryParseHearts(args[^1], out int hearts))
             return;
-        }
-
-        if (hearts < 0 || hearts > 14)
-        {
-            this.monitor.Log("Hearts must be between 0 and 14.", LogLevel.Warn);
-            return;
-        }
 
         string npcName = string.Join(" ", args[..^1]);
 
-        this.relationshipService.SetHearts(npcName, hearts);
+        relationship.SetHearts(npcName, hearts);
+    }
+
+    private bool TryParseHearts(string value, out int hearts)
+    {
+        if (!int.TryParse(value, out hearts))
+        {
+            monitor.Log("Hearts must be a whole number.", LogLevel.Warn);
+            return false;
+        }
+
+        if (hearts < 0 || hearts > MaxHearts)
+        {
+            monitor.Log($"Hearts must be between 0 and {MaxHearts}.", LogLevel.Warn);
+            return false;
+        }
+
+        return true;
     }
 }
