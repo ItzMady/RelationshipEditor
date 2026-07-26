@@ -31,17 +31,14 @@ Whether you are testing a custom NPC, developing a mod, fixing a save file, or s
 
 Before installing this mod, make sure you have:
 
-- [Stardew Valley](https://store.steampowered.com/app/413150/Stardew_Valley/)
+- [Stardew Valley](https://store.steampowered.com/app/413150/Stardew_Valley/) **1.6 or newer**
 - [SMAPI](https://smapi.io/)
-- Stardew Valley **1.6 or newer**
 
 ---
 
 ## Installation
 
-1. Install SMAPI:
-   
-   https://smapi.io/
+1. Install SMAPI: https://smapi.io/
 
 2. Download the latest release of Relationship Editor.
 
